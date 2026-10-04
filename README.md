@@ -10,6 +10,28 @@
 - **大运**（起运时间 + 每十年大运）
 - **命局层次评分**：五个维度加权评分，每项扣分/加分理由完全透明，权重可在界面调整
 
+## 部署与分享
+
+### 海外 / 通用：GitHub Pages（已配置）
+
+推送到 `main` 分支后，GitHub Actions 会自动构建并发布，工作流见 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)。
+
+- **线上地址**：https://yukinoNa.github.io/fate-order/
+- **更新流程**：改完代码 → `git add -A` → `git commit -m "说明"` → `git push` → 1~2 分钟后自动上线
+- 首次部署需在仓库 Settings → Pages → Source 选择 **GitHub Actions**
+
+### 国内访问：腾讯云 EdgeOne Pages（待办）
+
+`github.io` 在国内基本无法访问，国内分享需换用国内平台。推荐腾讯云 EdgeOne Pages（免费、国内节点、可从 GitHub 仓库自动构建）：
+
+1. 注册/登录腾讯云（微信扫码）并完成实名认证
+2. 打开 https://console.cloud.tencent.com/edgeone/pages → 立即开通 → 绑定 GitHub → 选择仓库
+3. 构建配置：**构建命令** `npm run build`，**输出目录** `dist`，Node 版本默认即可
+4. 部署后获得默认域名（形如 `xxx.edgeone.app`，可自定义子域名）
+5. 默认域名通常无需备案；绑定自有域名并需要大陆节点加速时才需备案
+
+绑定完成后，每次 `git push` 会同时更新 GitHub Pages 与国内站。
+
 ## 快速开始
 
 ```bash
