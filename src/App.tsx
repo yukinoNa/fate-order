@@ -56,29 +56,69 @@ function loadExplainMode(): boolean {
   return false;
 }
 
+/**
+ * 示例链接：`?demo=1` 直接展示一份示例命盘，可叠加 `&theme=whale`、`&explain=1`。
+ * 用于分享演示链接 / 截图 / 给第一次来的人一个「直接看效果」的入口；不会覆盖访问者自己的本地设置。
+ */
+interface DemoParams {
+  theme?: Theme;
+  explain: boolean;
+}
+
+function readDemo(): DemoParams | null {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    if (p.get('demo') !== '1') return null;
+    const t = p.get('theme');
+    return {
+      theme: t === 'whale' ? 'whale' : t === 'default' ? 'default' : undefined,
+      explain: p.get('explain') === '1',
+    };
+  } catch {
+    return null;
+  }
+}
+
 export default function App() {
-  const [input, setInput] = useState<BirthInput>(loadInput);
+  const [demo] = useState(readDemo);
+  const [input, setInput] = useState<BirthInput>(() => (demo ? DEFAULT_INPUT : loadInput()));
   const [weights, setWeights] = useState<ScoringWeights>(loadWeights);
-  const [theme, setTheme] = useState<Theme>(loadTheme);
-  const [submittedInput, setSubmittedInput] = useState<BirthInput | null>(null);
+  const [theme, setTheme] = useState<Theme>(() => demo?.theme ?? loadTheme());
+  const [submittedInput, setSubmittedInput] = useState<BirthInput | null>(() => (demo ? DEFAULT_INPUT : null));
   const [mascotMissing, setMascotMissing] = useState(false);
-  const [explainMode, setExplainMode] = useState(loadExplainMode);
+  const [explainMode, setExplainMode] = useState(() => demo?.explain ?? loadExplainMode());
 
   useEffect(() => {
+    if (demo) return; // 示例模式不覆盖访问者自己的设置
     try { localStorage.setItem('bazi_input', JSON.stringify(input)); } catch { /* ignore */ }
-  }, [input]);
+  }, [input, demo]);
   useEffect(() => {
+    if (demo) return;
     try { localStorage.setItem('bazi_weights', JSON.stringify(weights)); } catch { /* ignore */ }
-  }, [weights]);
+  }, [weights, demo]);
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', theme === 'whale' ? '#eef3ff' : '#14141f');
-    try { localStorage.setItem('bazi_theme', theme); } catch { /* ignore */ }
-  }, [theme]);
+    if (!demo) {
+      try { localStorage.setItem('bazi_theme', theme); } catch { /* ignore */ }
+    }
+  }, [theme, demo]);
   useEffect(() => {
+    if (demo) return;
     try { localStorage.setItem('bazi_explain', explainMode ? '1' : '0'); } catch { /* ignore */ }
-  }, [explainMode]);
+  }, [explainMode, demo]);
+
+  // 结果面板是 React 渲染出来的，浏览器的初始锚点滚动找不到它们，
+  // 这里在渲染完成后补一次滚动，让 `#score`、`#pillars` 之类的深链真正可用。
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash) return;
+    const timer = setTimeout(() => {
+      document.getElementById(hash)?.scrollIntoView();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [submittedInput]);
 
   const effectiveWeights = useMemo(() => normalizeWeights(weights), [weights]);
 

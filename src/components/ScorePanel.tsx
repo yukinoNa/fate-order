@@ -20,7 +20,7 @@ export default function ScorePanel({ score, weights, effectiveWeights, onWeights
   const setW = (k: keyof ScoringWeights, v: number) => onWeightsChange({ ...weights, [k]: v });
 
   return (
-    <div className="panel">
+    <div className="panel" id="score">
       <h2>命局层次</h2>
 
       <div className="score-hero">

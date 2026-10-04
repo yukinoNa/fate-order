@@ -27,7 +27,7 @@ function PillarCell({ p }: { p: Pillar }) {
 
 export default function FourPillars({ pillars }: { pillars: Pillar[] }) {
   return (
-    <div className="panel">
+    <div className="panel" id="pillars">
       <h2>四柱命盘</h2>
       <div className="pillar-table">
         {pillars.map((p) => <PillarCell key={p.label} p={p} />)}
