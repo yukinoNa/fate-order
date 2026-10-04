@@ -1,0 +1,17 @@
+{
+  "name": "八字命盘 · 命局层次推演",
+  "short_name": "八字命盘",
+  "description": "输入出生时间，自动排四柱、十神、大运，并给出透明可调的命局层次评分",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#14141f",
+  "theme_color": "#14141f",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
