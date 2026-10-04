@@ -485,3 +485,39 @@ label.field > span {
   color: var(--accent-contrast);
   font-weight: 650;
 }
+
+/* 测算按钮 */
+.calculate-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  letter-spacing: 0.05em;
+}
+
+/* 页头标题 + 鲸鱼娘头像 */
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 280px;
+}
+
+.whale-mascot {
+  display: none;
+  width: 84px;
+  height: 84px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(77, 107, 254, 0.28);
+  flex: none;
+}
+
+:root[data-theme='whale'] .whale-mascot {
+  display: block;
+}
+
+.whale-mascot.missing {
+  display: none !important;
+}

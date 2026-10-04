@@ -52,6 +52,8 @@ export default function App() {
   const [input, setInput] = useState<BirthInput>(loadInput);
   const [weights, setWeights] = useState<ScoringWeights>(loadWeights);
   const [theme, setTheme] = useState<Theme>(loadTheme);
+  const [submittedInput, setSubmittedInput] = useState<BirthInput | null>(null);
+  const [mascotMissing, setMascotMissing] = useState(false);
 
   useEffect(() => {
     try { localStorage.setItem('bazi_input', JSON.stringify(input)); } catch { /* ignore */ }
@@ -68,23 +70,35 @@ export default function App() {
 
   const effectiveWeights = useMemo(() => normalizeWeights(weights), [weights]);
 
+  // 只在点击「开始测算」后，才基于提交时的输入快照计算结果
   const result = useMemo(() => {
+    if (!submittedInput) return null;
     try {
-      const chart = buildChart(input);
+      const chart = buildChart(submittedInput);
       const score = scoreChart(chart, effectiveWeights);
       return { chart, score, error: null as string | null };
     } catch (e) {
       return { chart: null, score: null, error: e instanceof Error ? e.message : String(e) };
     }
-  }, [input, effectiveWeights]);
+  }, [submittedInput, effectiveWeights]);
+
+  const isDirty = submittedInput !== null && JSON.stringify(submittedInput) !== JSON.stringify(input);
 
   return (
     <div>
       <header className="header-row" style={{ marginBottom: 16 }}>
-        <div>
-          <h1>八字命盘 · 命局层次推演</h1>
-          <div className="muted small">
-            输入出生时间，自动排四柱、十神、大运，并给出透明可调的命局层次评分。
+        <div className="header-title">
+          <img
+            className={`whale-mascot${mascotMissing ? ' missing' : ''}`}
+            src="./whale-mascot.webp"
+            alt="鲸鱼娘"
+            onError={() => setMascotMissing(true)}
+          />
+          <div>
+            <h1>八字命盘 · 命局层次推演</h1>
+            <div className="muted small">
+              输入出生时间，点击「开始测算」，排四柱、十神、大运并给出命局层次评分。
+            </div>
           </div>
         </div>
         <div className="theme-switch" role="group" aria-label="页面皮肤">
@@ -99,12 +113,27 @@ export default function App() {
 
       <BirthForm value={input} onChange={setInput} />
 
-      {result.error ? (
+      <div style={{ marginBottom: 14 }}>
+        <button className="primary calculate-btn" onClick={() => setSubmittedInput(input)}>
+          ✨ 开始测算
+        </button>
+        {isDirty && (
+          <div className="muted small" style={{ marginTop: 8, textAlign: 'center' }}>
+            出生信息已修改，点击「开始测算」重新计算
+          </div>
+        )}
+      </div>
+
+      {submittedInput === null ? (
+        <div className="panel muted" style={{ textAlign: 'center', padding: '32px 14px' }}>
+          填写出生信息后，点击「✨ 开始测算」查看命盘与命局层次
+        </div>
+      ) : result?.error ? (
         <div className="panel">
           <div style={{ color: 'var(--bad)' }}>排盘出错：{result.error}</div>
           <div className="muted small">请检查日期是否有效（如农历闰月、当月天数、0-23 时等）。</div>
         </div>
-      ) : result.chart && result.score ? (
+      ) : result?.chart && result.score ? (
         <>
           {result.chart.correctedDesc && (
             <div className="panel">
@@ -135,6 +164,7 @@ export default function App() {
         <br />· 「命局层次」为<b>透明启发式评分</b>，各维度权重可自行调整，仅供学习参考，不代表任何权威门派结论。
         <br />· 真太阳时 = 北京时间 + (经度−120°)×4分钟 + 均时差；晚子时（23-24点）日柱口径可在表单中选择。
         <br />· 命理为传统文化，请理性看待，勿用于重大决策。
+        <br />· 鲸鱼娘头像源自开源「梗鲸 · DeepSeek酱语录」表情包（deepseek-chan-meme-pack），仅供学习使用。
       </div>
     </div>
   );
