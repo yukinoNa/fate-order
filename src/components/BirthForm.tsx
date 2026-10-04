@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { BirthInput, CalendarType, Gender } from '../types';
 
 const CITIES: Array<[string, number]> = [
@@ -11,17 +12,37 @@ function shiChen(hour: number): string {
   return names[Math.floor(((hour + 1) % 24) / 2)];
 }
 
+type NumField = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'longitude';
+type Draft = Record<NumField, string>;
+
+function toDraft(v: BirthInput): Draft {
+  return {
+    year: String(v.year),
+    month: String(v.month),
+    day: String(v.day),
+    hour: String(v.hour),
+    minute: String(v.minute),
+    longitude: String(v.longitude),
+  };
+}
+
 interface Props {
   value: BirthInput;
   onChange: (v: BirthInput) => void;
 }
 
 export default function BirthForm({ value, onChange }: Props) {
+  // 数字字段用「草稿字符串」承载，允许为空；只在解析出合法数字时才写回父级，
+  // 这样就能先清空、再输入，而不会一删就弹回旧值。
+  const [draft, setDraft] = useState<Draft>(() => toDraft(value));
+
   const set = <K extends keyof BirthInput>(k: K, v: BirthInput[K]) => onChange({ ...value, [k]: v });
 
-  const num = (v: string, fallback: number) => {
-    const n = parseInt(v, 10);
-    return Number.isFinite(n) ? n : fallback;
+  const commit = (k: NumField, s: string) => {
+    setDraft((d) => ({ ...d, [k]: s }));
+    if (s.trim() === '') return; // 留空：暂不写回，等输入有效值
+    const n = k === 'longitude' ? parseFloat(s) : parseInt(s, 10);
+    if (Number.isFinite(n)) onChange({ ...value, [k]: n });
   };
 
   return (
@@ -41,15 +62,15 @@ export default function BirthForm({ value, onChange }: Props) {
         <div className="row">
           <label className="field">
             <span>年</span>
-            <input type="number" value={value.year} onChange={(e) => set('year', num(e.target.value, value.year))} />
+            <input type="number" value={draft.year} onChange={(e) => commit('year', e.target.value)} />
           </label>
           <label className="field">
             <span>月</span>
-            <input type="number" value={value.month} onChange={(e) => set('month', num(e.target.value, value.month))} />
+            <input type="number" value={draft.month} onChange={(e) => commit('month', e.target.value)} />
           </label>
           <label className="field">
             <span>日</span>
-            <input type="number" value={value.day} onChange={(e) => set('day', num(e.target.value, value.day))} />
+            <input type="number" value={draft.day} onChange={(e) => commit('day', e.target.value)} />
           </label>
         </div>
 
@@ -63,11 +84,11 @@ export default function BirthForm({ value, onChange }: Props) {
         <div className="row">
           <label className="field">
             <span>时（0-23）</span>
-            <input type="number" value={value.hour} onChange={(e) => set('hour', num(e.target.value, value.hour))} />
+            <input type="number" value={draft.hour} onChange={(e) => commit('hour', e.target.value)} />
           </label>
           <label className="field">
             <span>分</span>
-            <input type="number" value={value.minute} onChange={(e) => set('minute', num(e.target.value, value.minute))} />
+            <input type="number" value={draft.minute} onChange={(e) => commit('minute', e.target.value)} />
           </label>
           <label className="field">
             <span>性别</span>
@@ -103,11 +124,17 @@ export default function BirthForm({ value, onChange }: Props) {
           <div className="row">
             <label className="field">
               <span>出生地经度（°E）</span>
-              <input type="number" step="0.1" value={value.longitude} onChange={(e) => set('longitude', num(e.target.value, value.longitude))} />
+              <input type="number" step="0.1" value={draft.longitude} onChange={(e) => commit('longitude', e.target.value)} />
             </label>
             <label className="field">
               <span>常用城市</span>
-              <select defaultValue="" onChange={(e) => { const c = CITIES.find((x) => x[0] === e.target.value); if (c) set('longitude', c[1]); }}>
+              <select defaultValue="" onChange={(e) => {
+                const c = CITIES.find((x) => x[0] === e.target.value);
+                if (c) {
+                  setDraft((d) => ({ ...d, longitude: String(c[1]) }));
+                  onChange({ ...value, longitude: c[1] });
+                }
+              }}>
                 <option value="">选择城市</option>
                 {CITIES.map(([name, lng]) => (
                   <option key={name} value={name}>{name}（{lng}°E）</option>
