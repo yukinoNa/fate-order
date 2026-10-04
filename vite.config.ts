@@ -10,5 +10,10 @@ export default defineConfig({
     port: 5173,
     // 允许通过隧道/域名访问（本机个人开发环境；生产部署不受此配置影响）
     allowedHosts: true,
+    watch: {
+      // 忽略编辑器/工具产生的临时文件与构建产物，
+      // 否则监听器可能因临时文件被占用（EBUSY）而让开发服务器整个崩溃
+      ignored: ['**/.*.tmpdir/**', '**/*.tmp', '**/dist/**'],
+    },
   },
 });
