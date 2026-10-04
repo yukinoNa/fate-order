@@ -8,6 +8,7 @@ import FourPillars from './components/FourPillars';
 import WuXingChart from './components/WuXingChart';
 import DaYunList from './components/DaYunList';
 import ScorePanel from './components/ScorePanel';
+import ExplainPanel from './components/ExplainPanel';
 
 const DEFAULT_INPUT: BirthInput = {
   calendar: 'solar',
@@ -48,12 +49,20 @@ function loadTheme(): Theme {
   return 'default';
 }
 
+function loadExplainMode(): boolean {
+  try {
+    return localStorage.getItem('bazi_explain') === '1';
+  } catch { /* ignore */ }
+  return false;
+}
+
 export default function App() {
   const [input, setInput] = useState<BirthInput>(loadInput);
   const [weights, setWeights] = useState<ScoringWeights>(loadWeights);
   const [theme, setTheme] = useState<Theme>(loadTheme);
   const [submittedInput, setSubmittedInput] = useState<BirthInput | null>(null);
   const [mascotMissing, setMascotMissing] = useState(false);
+  const [explainMode, setExplainMode] = useState(loadExplainMode);
 
   useEffect(() => {
     try { localStorage.setItem('bazi_input', JSON.stringify(input)); } catch { /* ignore */ }
@@ -67,6 +76,9 @@ export default function App() {
     if (meta) meta.setAttribute('content', theme === 'whale' ? '#eef3ff' : '#14141f');
     try { localStorage.setItem('bazi_theme', theme); } catch { /* ignore */ }
   }, [theme]);
+  useEffect(() => {
+    try { localStorage.setItem('bazi_explain', explainMode ? '1' : '0'); } catch { /* ignore */ }
+  }, [explainMode]);
 
   const effectiveWeights = useMemo(() => normalizeWeights(weights), [weights]);
 
@@ -101,13 +113,22 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className="theme-switch" role="group" aria-label="页面皮肤">
-          <button className={theme === 'default' ? 'active' : ''} onClick={() => setTheme('default')}>
-            🌙 默认
+        <div className="header-controls">
+          <button
+            className={`mode-toggle${explainMode ? ' active' : ''}`}
+            onClick={() => setExplainMode((v) => !v)}
+            title="开启后，结果上方会出现面向新手的白话解读"
+          >
+            📖 详解{explainMode ? '：开' : '模式'}
           </button>
-          <button className={theme === 'whale' ? 'active' : ''} onClick={() => setTheme('whale')}>
-            🐋 鲸鱼娘
-          </button>
+          <div className="theme-switch" role="group" aria-label="页面皮肤">
+            <button className={theme === 'default' ? 'active' : ''} onClick={() => setTheme('default')}>
+              🌙 默认
+            </button>
+            <button className={theme === 'whale' ? 'active' : ''} onClick={() => setTheme('whale')}>
+              🐋 鲸鱼娘
+            </button>
+          </div>
         </div>
       </header>
 
@@ -135,6 +156,7 @@ export default function App() {
         </div>
       ) : result?.chart && result.score ? (
         <>
+          {explainMode && <ExplainPanel chart={result.chart} score={result.score} />}
           {result.chart.correctedDesc && (
             <div className="panel">
               <div className="small">真太阳时校正：{result.chart.correctedDesc}</div>
@@ -143,6 +165,11 @@ export default function App() {
                   注意：校正后跨过了日/月分界，四柱已按校正后的时间重新起算。
                 </div>
               )}
+            </div>
+          )}
+          {explainMode && (
+            <div className="muted small" style={{ margin: '20px 0 8px', textAlign: 'center' }}>
+              ——— 以下为专业排盘数据 ———
             </div>
           )}
           <ScorePanel

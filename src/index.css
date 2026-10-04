@@ -521,3 +521,110 @@ label.field > span {
 .whale-mascot.missing {
   display: none !important;
 }
+
+/* 详解模式开关 */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mode-toggle {
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.mode-toggle.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 650;
+}
+
+/* 白话详解面板 */
+.explain-panel {
+  border-color: var(--accent);
+}
+
+.explain-headline {
+  background: var(--accent-soft);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.75;
+  margin-bottom: 6px;
+}
+
+.explain-block {
+  border-top: 1px solid var(--border);
+  padding: 14px 0 4px;
+}
+
+.explain-block h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.explain-block p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--text);
+}
+
+.explain-bullets {
+  margin: 6px 0 4px;
+  padding-left: 20px;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.explain-bullets li {
+  margin: 4px 0;
+}
+
+.explain-glossary {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.explain-glossary summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.glossary-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.glossary-item {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.7;
+  flex-wrap: wrap;
+}
+
+.glossary-term {
+  flex: none;
+  min-width: 88px;
+  color: var(--accent);
+  font-weight: 650;
+}
+
+.glossary-mean {
+  color: var(--muted);
+  flex: 1 1 200px;
+}

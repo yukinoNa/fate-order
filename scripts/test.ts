@@ -4,6 +4,7 @@
  */
 import { buildChart } from '../src/lib/bazi';
 import { scoreChart } from '../src/lib/scoring';
+import { explainChart } from '../src/lib/explain';
 import { DEFAULT_WEIGHTS } from '../src/config/scoringWeights';
 import type { BirthInput } from '../src/types';
 
@@ -72,3 +73,22 @@ show({ ...base(), year: 1988, month: 8, day: 8, hour: 8 }, 'E3 1988-08-08 08:00 
 show({ ...base(), year: 2000, month: 12, day: 25, hour: 2 }, 'E4 2000-12-25 02:00 男');
 show({ ...base(), year: 1976, month: 7, day: 28, hour: 3, minute: 30 }, 'E5 1976-07-28 03:30 男（唐山地震日）');
 show({ ...base(), year: 2024, month: 1, day: 1, hour: 0 }, 'E6 2024-01-01 00:00 男');
+
+// G. 详解模式（白话解读）冒烟测试
+console.log('\n===== G 白话详解输出 =====');
+{
+  const chart = buildChart(base());
+  const score = scoreChart(chart, DEFAULT_WEIGHTS);
+  const ex = explainChart(chart, score);
+  console.log('【总览】', ex.headline);
+  for (const b of ex.blocks) {
+    console.log(`\n${b.icon} ${b.title}`);
+    b.body.forEach((p) => console.log('   ', p));
+    (b.bullets ?? []).forEach((t) => console.log('    ·', t));
+  }
+  console.log(`\n【术语词典】共 ${ex.glossary.length} 条`);
+  if (ex.blocks.length !== 6) throw new Error('G 失败：详解区块数量异常');
+  if (!ex.headline.includes('你自己')) throw new Error('G 失败：总览缺少日主说明');
+  if (ex.glossary.length < 10) throw new Error('G 失败：术语词典过少');
+  console.log('G 详解生成 ✅');
+}
