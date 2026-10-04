@@ -39,9 +39,19 @@ function loadWeights(): ScoringWeights {
   return DEFAULT_WEIGHTS;
 }
 
+type Theme = 'default' | 'whale';
+
+function loadTheme(): Theme {
+  try {
+    if (localStorage.getItem('bazi_theme') === 'whale') return 'whale';
+  } catch { /* ignore */ }
+  return 'default';
+}
+
 export default function App() {
   const [input, setInput] = useState<BirthInput>(loadInput);
   const [weights, setWeights] = useState<ScoringWeights>(loadWeights);
+  const [theme, setTheme] = useState<Theme>(loadTheme);
 
   useEffect(() => {
     try { localStorage.setItem('bazi_input', JSON.stringify(input)); } catch { /* ignore */ }
@@ -49,6 +59,12 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem('bazi_weights', JSON.stringify(weights)); } catch { /* ignore */ }
   }, [weights]);
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'whale' ? '#eef3ff' : '#14141f');
+    try { localStorage.setItem('bazi_theme', theme); } catch { /* ignore */ }
+  }, [theme]);
 
   const effectiveWeights = useMemo(() => normalizeWeights(weights), [weights]);
 
@@ -64,10 +80,20 @@ export default function App() {
 
   return (
     <div>
-      <header style={{ marginBottom: 16 }}>
-        <h1>八字命盘 · 命局层次推演</h1>
-        <div className="muted small">
-          输入出生时间，自动排四柱、十神、大运，并给出透明可调的命局层次评分。
+      <header className="header-row" style={{ marginBottom: 16 }}>
+        <div>
+          <h1>八字命盘 · 命局层次推演</h1>
+          <div className="muted small">
+            输入出生时间，自动排四柱、十神、大运，并给出透明可调的命局层次评分。
+          </div>
+        </div>
+        <div className="theme-switch" role="group" aria-label="页面皮肤">
+          <button className={theme === 'default' ? 'active' : ''} onClick={() => setTheme('default')}>
+            🌙 默认
+          </button>
+          <button className={theme === 'whale' ? 'active' : ''} onClick={() => setTheme('whale')}>
+            🐋 鲸鱼娘
+          </button>
         </div>
       </header>
 

@@ -12,6 +12,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="八字命盘" />
     <title>八字命盘 · 命局层次推演</title>
+    <script>
+      // 在应用挂载前应用已保存的皮肤，避免深色→浅色闪烁
+      try {
+        if (localStorage.getItem('bazi_theme') === 'whale') {
+          document.documentElement.setAttribute('data-theme', 'whale');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

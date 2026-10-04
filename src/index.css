@@ -7,6 +7,7 @@
   --muted: #9a9ab0;
   --accent: #d4a64a;
   --accent-soft: rgba(212, 166, 74, 0.16);
+  --accent-contrast: #1a1206;
   --wood: #4caf7d;
   --fire: #e06c5a;
   --earth: #d2a24a;
@@ -15,7 +16,54 @@
   --good: #4caf7d;
   --bad: #e06c5a;
   --warn: #d2a24a;
+  --good-soft: rgba(76, 175, 125, 0.4);
+  --bad-soft: rgba(224, 108, 90, 0.4);
+  --warn-soft: rgba(210, 162, 74, 0.4);
   color-scheme: dark;
+}
+
+/* 鲸鱼娘皮肤：浅色海洋风（DeepSeek 蓝 #4D6BFE + 白色） */
+:root[data-theme='whale'] {
+  --bg: #eef3ff;
+  --panel: #ffffff;
+  --panel-2: #eef3ff;
+  --border: #d9e3ff;
+  --text: #17224a;
+  --muted: #5b6b8f;
+  --accent: #4d6bfe;
+  --accent-soft: rgba(77, 107, 254, 0.12);
+  --accent-contrast: #ffffff;
+  --wood: #2f9e6f;
+  --fire: #e0554b;
+  --earth: #c98a1b;
+  --metal: #8792a8;
+  --water: #3a7be0;
+  --good: #2f9e6f;
+  --bad: #e0554b;
+  --warn: #c98a1b;
+  --good-soft: rgba(47, 158, 111, 0.35);
+  --bad-soft: rgba(224, 85, 75, 0.35);
+  --warn-soft: rgba(201, 138, 27, 0.4);
+  color-scheme: light;
+}
+
+:root[data-theme='whale'] body {
+  background:
+    radial-gradient(1100px 520px at 50% -8%, rgba(77, 107, 254, 0.14), transparent 62%),
+    linear-gradient(180deg, #f2f6ff 0%, #e7efff 100%);
+  background-attachment: fixed;
+}
+
+:root[data-theme='whale'] #root::before {
+  content: '🐋';
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  font-size: 46px;
+  line-height: 1;
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: 0;
 }
 
 * {
@@ -115,7 +163,7 @@ button:hover {
 button.primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #1a1206;
+  color: var(--accent-contrast);
   font-weight: 650;
 }
 
@@ -343,17 +391,17 @@ label.field > span {
 
 .tag.good {
   color: var(--good);
-  border-color: rgba(76, 175, 125, 0.4);
+  border-color: var(--good-soft);
 }
 
 .tag.bad {
   color: var(--bad);
-  border-color: rgba(224, 108, 90, 0.4);
+  border-color: var(--bad-soft);
 }
 
 .tag.warn {
   color: var(--warn);
-  border-color: rgba(210, 162, 74, 0.4);
+  border-color: var(--warn-soft);
 }
 
 /* 大运 */
@@ -402,3 +450,38 @@ label.field > span {
 .color-earth { color: var(--earth); }
 .color-metal { color: var(--metal); }
 .color-water { color: var(--water); }
+
+/* 页头与皮肤切换 */
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.theme-switch {
+  display: inline-flex;
+  gap: 4px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  border-radius: 999px;
+  padding: 3px;
+  flex: none;
+}
+
+.theme-switch button {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 13px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.theme-switch button.active {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 650;
+}
