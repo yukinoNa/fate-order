@@ -74,8 +74,8 @@ show({ ...base(), year: 2000, month: 12, day: 25, hour: 2 }, 'E4 2000-12-25 02:0
 show({ ...base(), year: 1976, month: 7, day: 28, hour: 3, minute: 30 }, 'E5 1976-07-28 03:30 男（唐山地震日）');
 show({ ...base(), year: 2024, month: 1, day: 1, hour: 0 }, 'E6 2024-01-01 00:00 男');
 
-// G. 详解模式（白话解读）冒烟测试
-console.log('\n===== G 白话详解输出 =====');
+// G. 详解模式（默认声线）冒烟测试
+console.log('\n===== G 白话详解输出（默认声线）=====');
 {
   const chart = buildChart(base());
   const score = scoreChart(chart, DEFAULT_WEIGHTS);
@@ -86,9 +86,31 @@ console.log('\n===== G 白话详解输出 =====');
     b.body.forEach((p) => console.log('   ', p));
     (b.bullets ?? []).forEach((t) => console.log('    ·', t));
   }
-  console.log(`\n【术语词典】共 ${ex.glossary.length} 条`);
+  console.log(`【术语词典】共 ${ex.glossary.length} 条`);
   if (ex.blocks.length !== 6) throw new Error('G 失败：详解区块数量异常');
   if (!ex.headline.includes('你自己')) throw new Error('G 失败：总览缺少日主说明');
   if (ex.glossary.length < 10) throw new Error('G 失败：术语词典过少');
-  console.log('G 详解生成 ✅');
+  if (ex.blocks.some((b) => b.quip)) throw new Error('G 失败：默认声线不应带吐槽');
+  console.log('G 默认声线 ✅');
+}
+
+// H. 鲸鱼娘声线冒烟测试
+console.log('\n===== H 鲸鱼娘声线输出 =====');
+{
+  const chart = buildChart(base());
+  const score = scoreChart(chart, DEFAULT_WEIGHTS);
+  const ex = explainChart(chart, score, 'whale');
+  console.log('【解说】', ex.personaName, '|', ex.personaTagline);
+  console.log('【总览】', ex.headline);
+  for (const b of ex.blocks) {
+    console.log(`\n${b.icon} ${b.title}`);
+    if (b.quip) console.log('    🐋', b.quip);
+  }
+  console.log('【收尾】', ex.signoff);
+  if (ex.voice !== 'whale') throw new Error('H 失败：声线标记错误');
+  if (ex.blocks.length !== 6) throw new Error('H 失败：区块数量异常');
+  if (ex.blocks.filter((b) => b.quip).length !== 6) throw new Error('H 失败：吐槽数量不为 6');
+  if (!ex.signoff) throw new Error('H 失败：缺少收尾语');
+  if (!ex.headline.includes('本鱼')) throw new Error('H 失败：总览未使用本鱼口吻');
+  console.log('H 鲸鱼娘声线 ✅');
 }

@@ -628,3 +628,55 @@ label.field > span {
   color: var(--muted);
   flex: 1 1 200px;
 }
+
+/* 鲸鱼娘模式下：本鱼解说 */
+.explain-panel.whale-voice {
+  background: linear-gradient(180deg, #eef4ff 0%, #ffffff 42%);
+  border-color: #4d6bfe;
+  border-width: 1.5px;
+}
+
+.explain-voice-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #c7d6ff;
+  margin-bottom: 12px;
+}
+
+.explain-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid #4d6bfe;
+  flex: none;
+}
+
+.explain-voice-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #4d6bfe;
+}
+
+.explain-quip {
+  margin: 8px 0 2px;
+  padding: 8px 12px;
+  background: rgba(77, 107, 254, 0.08);
+  border-left: 3px solid #4d6bfe;
+  border-radius: 0 10px 10px 0;
+  font-size: 13px;
+  line-height: 1.75;
+  color: #3f4d78;
+}
+
+.explain-signoff {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: #4d6bfe;
+  color: #ffffff;
+  border-radius: 14px 14px 14px 4px;
+  font-size: 13.5px;
+  line-height: 1.75;
+}

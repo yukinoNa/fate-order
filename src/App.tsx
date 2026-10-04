@@ -156,7 +156,13 @@ export default function App() {
         </div>
       ) : result?.chart && result.score ? (
         <>
-          {explainMode && <ExplainPanel chart={result.chart} score={result.score} />}
+          {explainMode && (
+            <ExplainPanel
+              chart={result.chart}
+              score={result.score}
+              persona={theme === 'whale' ? 'whale' : 'neutral'}
+            />
+          )}
           {result.chart.correctedDesc && (
             <div className="panel">
               <div className="small">真太阳时校正：{result.chart.correctedDesc}</div>
